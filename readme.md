@@ -5,9 +5,6 @@
 ### 基本使用
 ```html
 <style>
-        pre {
-            height: 500px;
-        }
         .nav{
             position: fixed;
         }
@@ -16,8 +13,7 @@
         }
 </style>
 
-<div class="nav nav-vertical nav-floating nav-fixed nav-folded">
-    <div class="nav-fold_controller"></div>
+<div class="nav">
     <div href="javascript:;" class="nav_item active" data-target=".e-1">example-1</div>
     <div href="javascript:;" class="nav_item " data-target=".e-2">example-2</div>
     <div href="javascript:;" class="nav_item " data-target=".e-3">example-3</div>
@@ -27,13 +23,7 @@
 </div>
 ```
 
-#### 创建方式 1
-这是一个什么功能都没有的nav, 但你可以通过后续对对象设置参数控制。
-```javascript
-var ctrlO = Nav.init(); // ${ctrlO} 是一个navCtrl对象，里面包含控制navJS其他功能的参数
-```
 
-#### 创建方式 2
 你可以通过对 ```Nav.init()``` 传入参数进行初始化。
 例子创建的是一个滑动检测高亮和点击到点击nav元素后滑动到其指定位置的nav。
 ```javascript
@@ -56,8 +46,6 @@ var ctrlO = Nav.init({
        // data-attr的名称，你可以给它定义其他名称，以防它与你的其他应用冲突。
        // 你必须要指定这个，否则出现什么事情我不负责任。。
        targetAttr: settings.targetAttr || "target",
-       // 你的nav元素类名
-       navClassName: settings.navClassName || "nav",
 
        // 是否采用内部自带的点击滚动功能
        // 默认是"false"
@@ -69,8 +57,9 @@ var ctrlO = Nav.init({
        // example : <div class = "nav_item" data-target=".my-target1"/>my nav button 1</div>
        // 如果你给出不能选出元素的选择器，将会报错。
 
-       //这两个参数晚点再说 :)
+       //这个参数晚点再说 :)
        detectionLine: settings.detectionLine || 0.4,
+       // 因为在检测滑动的过程中使用了延迟检测避免回调过多导致性能问题，预定是0.05s检测一次，你觉得不够精准的话，可以减少数值。
        detectionInterval: settings.detectionInterval || 50,
 
        // 在普通情况下这个回调是不会用到的。
@@ -80,13 +69,116 @@ var ctrlO = Nav.init({
        // ps : 之后我会给一个实例。
        onNavClick: settings.onNavClick || new Function(),
 
-       // 还在测试当中。
+       // 用于自定义检测器，onCustomDetectorRegister会在初始化时被调用，返回一个函数activator(data-attr)。
+       // 你传入在html中预定义好的data-attr值，navjs就会帮你给元素加上一个active的类（这个类名是你定义的，或者采用预定值active）
        useCustomDetector: settings.useCustomDetector || false,
        onCustomDetectorRegister: settings.onCustomDetectorRegister || new Function()
-
    }
 
 ```
 
-#### 版本
+### 例子
+#### 基本使用 2
+```html
+<style>
+        .mynav{
+            position: fixed;
+        }
+        .mynav_item.mynav-active {
+            background: cadetblue;
+        }
+        .e-1,.e-2{
+            height : 1000px;
+            width : 100%;
+        }
+</style>
+
+<div class="mynav">
+    <div href="javascript:;" class="mynav_item mynav-active" data-targetToItem=".e-1">item1</div>
+    <div href="javascript:;" class="mynav_item " data-targetToItem=".e-2">item2</div>
+</div>
+
+<div class="e-1">e-1</div>
+<div class="e-2">e-2</div>
+```
+
+```javascript
+var ctrlO = Nav.init({
+    autoScroll : true,
+    autoScrollDetect : true,
+    navClassName: "mynav",
+    navActiveClassName: "mynav-active",
+    navItemClassName: "mynav_item",
+    targetAttr: "targetToItem"
+})
+```
+这是上面基本使用的自定义类版本，带有自动检测位置并高亮元素，且点击对应元素滑动到对应选择器的位置。
+```javascript
+var ctrlO = Nav.init({
+    autoScrollDetect : true,
+    navClassName: "mynav",
+    navActiveClassName: "mynav-active",
+    navItemClassName: "mynav_item",
+    targetAttr: "targetToItem"
+})
+```
+这是只带有检测滚动位置的并将对应的元素高亮的功能。
+#### 配合滑动元素使用
+现在有不少开源的滑动插件，如swiper.js。Navjs可以配合这些插件的api进行导航。
+这里演示的不是真实情况下的api，只是一些模拟api，这些api都是十分常见的api，可以在这类滑动插件当中找到。（说白了就是swiper）
+为了说明应用，定义几个这里要用的 :
+##### slideTo(index)
+滑动元素，滑到传入的索引
+##### onSlideFinished = function(instance){ instance.index }
+滑动结束后的回调函数，```instance``` 是传入滑动元素的实例。```instance.index``` 可以获得滑动后的索引。
+
+先摆出html代码，也是伪代码
+```html
+<style>
+        .mynav{
+            position: fixed;
+        }
+        .mynav_item.mynav-active {
+            background: cadetblue;
+        }
+        .e-1,.e-2{
+            height : 1000px;
+            width : 100%;
+        }
+</style>
+
+<div class="mynav">
+    <div href="javascript:;" class="mynav_item mynav-active" data-target="1">item1</div>
+    <div href="javascript:;" class="mynav_item " data-target="2">item2</div>
+</div>
+<div>
+    这里是你的滑动元素结构....
+</div>
+```
+```javascript
+var slideInstance = (一个实例),
+    ctrlO = Nav.init({
+        navClassName: "mynav",
+        navActiveClassName: "mynav-active",
+        navItemClassName: "mynav_item",
+        targetAttr: "targetToItem",
+        // 点击mynav_item后的回调函数，它会返回一个target，就是data-target的值。
+        // 假如你设置的target是slideInstance的索引的话，那么slide就会自动滑动到对应的地方。
+        onNavClick: function(targetAttr){
+            slideInstance.slideTo(targetAttr);
+        },
+        // 开启自定义探测器
+         useCustomDetector:true,
+         // 你传入在html中预定义好的data-target值，navjs就会帮你给元素加上一个mynav-active的类）
+         // 假如你设置的target是slideInstance的索引的话, 那么对应的元素就会有一个mynav-active的类。
+         onCustomDetectorRegister: function(activator){
+            slideInstance.onSlideFinished = function(instance){
+                activator(instance.index);
+            }
+         }
+    });
+
+```
+### 版本
 v0.0.1 暂时能用，先开一个坑，因为这个是做项目抽象出来的一个组件，匆忙用了jQuery，之后要摆脱jQuery的魔爪。
+v0.0.2 更新了一下 readme，依旧未做测试～。

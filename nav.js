@@ -172,9 +172,7 @@ Nav = (function ($) {
                     }
                 }
             }
-
             init();
-
             return new NavController(config);
         }
     }
