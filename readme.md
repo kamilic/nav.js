@@ -62,6 +62,11 @@ var ctrlO = Nav.init({
        // 因为在检测滑动的过程中使用了延迟检测避免回调过多导致性能问题，预定是0.05s检测一次，你觉得不够精准的话，可以减少数值。
        detectionInterval: settings.detectionInterval || 50,
 
+        // 定义滑动超过后悬浮的类名
+        navStickyClassName : settings.navStickedClassName || "sticky",
+        // 假如有滑动到超过导航条位置后悬浮的需求可以使用这个变量
+        isSticky : settings.isSticky || false,
+
        // 在普通情况下这个回调是不会用到的。
        // 但是假如，你希望给你的轮播图加个导航栏。点击导航栏的元素就会滑动到对应的地方。
        // 你可以在html的data-attr上定义好你的位置，navJS会在点击的时候，给你返回一个参数，其值就是你定义的data-attr值。
@@ -127,9 +132,9 @@ var ctrlO = Nav.init({
 现在有不少开源的滑动插件，如swiper.js。Navjs可以配合这些插件的api进行导航。
 这里演示的不是真实情况下的api，只是一些模拟api，这些api都是十分常见的api，可以在这类滑动插件当中找到。（说白了就是swiper）
 为了说明应用，定义几个这里要用的 :
-##### slideTo(index)
+#### slideTo(index)
 滑动元素，滑到传入的索引
-##### onSlideFinished = function(instance){ instance.index }
+#### onSlideFinished = function(instance){ instance.index }
 滑动结束后的回调函数，```instance``` 是传入滑动元素的实例。```instance.index``` 可以获得滑动后的索引。
 
 先摆出html代码，也是伪代码
@@ -167,10 +172,6 @@ var slideInstance = (一个实例),
         onNavClick: function(targetAttr){
             slideInstance.slideTo(targetAttr);
         },
-        // 定义滑动超过后悬浮的类名
-        navStickyClassName : settings.navStickedClassName || "sticky",
-        // 假如有滑动到超过导航条位置后悬浮的需求可以使用这个变量
-        isSticky : settings.isSticky || false,
         // 开启自定义探测器
          useCustomDetector:true,
          // 你传入在html中预定义好的data-target值，navjs就会帮你给元素加上一个mynav-active的类）
