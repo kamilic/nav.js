@@ -167,6 +167,10 @@ var slideInstance = (一个实例),
         onNavClick: function(targetAttr){
             slideInstance.slideTo(targetAttr);
         },
+        // 定义滑动超过后悬浮的类名
+        navStickyClassName : settings.navStickedClassName || "sticky",
+        // 假如有滑动到超过导航条位置后悬浮的需求可以使用这个变量
+        isSticky : settings.isSticky || false,
         // 开启自定义探测器
          useCustomDetector:true,
          // 你传入在html中预定义好的data-target值，navjs就会帮你给元素加上一个mynav-active的类）
@@ -182,3 +186,4 @@ var slideInstance = (一个实例),
 ### 版本
 v0.0.1 暂时能用，先开一个坑，因为这个是做项目抽象出来的一个组件，匆忙用了jQuery，之后要摆脱jQuery的魔爪。
 v0.0.2 更新了一下 readme，依旧未做测试～。
+v0.0.3 更新了一下，加入了滑动到超过导航条位置后添加悬浮类名的功能。

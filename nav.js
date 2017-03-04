@@ -23,7 +23,10 @@ Nav = (function ($) {
                     targetAttr: settings.targetAttr || "target",
                     // Your nav element className
                     navClassName: settings.navClassName || "nav",
-
+                    // Your fixed nav className
+                    navStickyClassName : settings.navStickedClassName || "sticky",
+                    // Do you want to use sticky nav ?
+                    isSticky : settings.isSticky || false,
                     // In most of situation, web page will scroll to predefined position when user's click on nav_item.
                     autoScroll: settings.autoScroll || false,
                     // Similarly, nav_item will be highlighted when user's visible viewport scroll to your predefined position.
@@ -81,6 +84,19 @@ Nav = (function ($) {
                 });
             }
 
+            function getNavOffsetTop() {
+                config.navOffsetTop = $(getClassSelector(config.navClassName)).offset().top;
+            }
+
+            function toggleSticky(status) {
+                var nav = $(getClassSelector(config.navClassName));
+                if(!status){
+                    nav.removeClass(config.navStickyClassName);
+                }else {
+                    nav.addClass(config.navStickyClassName);
+                }
+            }
+
             function getPos(list, top) {
                 var temp = 0,
                     result = null;
@@ -112,7 +128,16 @@ Nav = (function ($) {
                         var $window = $(window);
                         var top = $window.scrollTop(),
                             id = getPos(config.autoScrollSet, top);
-                        activator(id);
+                        if(config.autoScrollDetect){
+                            activator(id);
+                        }
+                        if(config.isSticky){
+                            if(top >= config.navOffsetTop){
+                                toggleSticky(true);
+                            }else {
+                                toggleSticky(false);
+                            }
+                        }
                         ontime = false;
                         setTimeout(function () {
                             ontime = true;
@@ -160,8 +185,12 @@ Nav = (function ($) {
                     getAllOffsetTop();
                 }
 
-                if (config.autoScrollDetect) {
+                if (config.autoScrollDetect || config.isSticky) {
                     registerScrollDetector();
+                }
+
+                if(config.isSticky){
+                    getNavOffsetTop();
                 }
 
                 if (config.useCustomDetector) {
