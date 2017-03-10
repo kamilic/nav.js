@@ -24,7 +24,7 @@ Nav = (function ($) {
                     // Your nav element className
                     navClassName: settings.navClassName || "nav",
                     // Your fixed nav className
-                    navStickyClassName : settings.navStickedClassName || "sticky",
+                    navStickyClassName : settings.navStickyClassName || "sticky",
                     // Do you want to use sticky nav ?
                     isSticky : settings.isSticky || false,
                     // In most of situation, web page will scroll to predefined position when user's click on nav_item.
